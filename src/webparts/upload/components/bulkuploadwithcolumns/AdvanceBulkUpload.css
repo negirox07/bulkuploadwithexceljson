@@ -1,0 +1,192 @@
+.bulkUploadContainer {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.bulkUploadHeader {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+
+  .highlight {
+    color: #0078d4;
+  }
+}
+
+.fileUploadBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  background: #f9fafb;
+  color: #666;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: #0078d4;
+    color: #0078d4;
+  }
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.mappingSection {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #444;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.mappingTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th {
+    background: #f3f4f6;
+    text-align: left;
+    padding: 0.6rem;
+    font-weight: 500;
+    color: #555;
+  }
+
+  td {
+    padding: 0.6rem;
+    border-top: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+
+  tr:hover {
+    background: #fafafa;
+  }
+
+  select {
+    width: 100%;
+    padding: 0.4rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.85rem;
+
+    &:focus {
+      border-color: #0078d4;
+      outline: none;
+      box-shadow: 0 0 3px rgba(0, 120, 212, 0.3);
+    }
+  }
+}
+
+.selectError {
+  border: 1px solid #d9534f !important;
+  background: #fef2f2;
+}
+
+.lookupPreview {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  max-height: 100px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+
+  .checkboxItem {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.warningText {
+  margin-top: 0.5rem;
+  color: #d9534f;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.uploadBtn {
+  display: inline-block;
+  background: #0078d4;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #005a9e;
+  }
+
+  &:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+  }
+}
+
+.progressBar {
+  margin-top: 1rem;
+  background: #e5e7eb;
+  border-radius: 8px;
+  height: 18px;
+  overflow: hidden;
+
+  div {
+    background: #0078d4;
+    height: 100%;
+    color: #fff;
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 18px;
+    transition: width 0.3s ease;
+  }
+}
+
+.logsSection {
+  margin-top: 1.5rem;
+}
+
+.logsBox {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.8rem;
+  max-height: 160px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+.emptyLog {
+  color: #9ca3af;
+}
+
+.logSuccess {
+  color: #15803d;
+}
+
+.logError {
+  color: #b91c1c;
+}

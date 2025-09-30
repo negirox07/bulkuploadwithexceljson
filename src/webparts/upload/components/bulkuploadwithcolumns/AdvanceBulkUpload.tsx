@@ -3,7 +3,7 @@ import * as XLSX from "xlsx";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { SPHttpClient } from "@microsoft/sp-http";
 import { SPHelpers } from "../../services/SPHelper";
-
+import "./AdvanceBulkUpload.css";
 interface IUploadAndCreateProps {
   context: WebPartContext;
   listName: string;
@@ -92,7 +92,7 @@ export const AdvanceBulkUpload: React.FC<IUploadAndCreateProps> = ({ context, li
 
   // --- Handle file upload ---
   // --- Handle file upload ---
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -403,123 +403,131 @@ export const AdvanceBulkUpload: React.FC<IUploadAndCreateProps> = ({ context, li
 
   // --- UI ---
   return (
-    <div className="p-4 border rounded bg-gray-50">
-      <h3 className="font-bold mb-2">📂 Bulk Upload → {listName}</h3>
+    <div className="bulkUploadContainer">
+      <h3 className="bulkUploadHeader">
+        📂 Bulk Upload → <span className="highlight">{listName}</span>
+      </h3>
 
-      <input type="file" accept=".xlsx,.xls,.json" onChange={handleFileUpload} className="mb-4" />
+      {/* File Upload */}
+      <label className="fileUploadBox">
+        <span>Click or drag a file here to upload</span>
+        <input
+          type="file"
+          accept=".xlsx,.xls,.json"
+          onChange={handleFileUpload}
+          className="hiddenInput"
+        />
+      </label>
 
+      {/* Column Mapping */}
       {columnMapping.length > 0 && (
-        <div className="mb-4">
-          <h4 className="font-semibold">Column Mapping</h4>
-          {columnMapping.map((map, idx) => {
-            const fieldMeta = listFields.find(f => f.InternalName === map.listField);
-            const isLookup = fieldMeta?.TypeAsString === "Lookup";
-            const isMultiLookup = isLookup && fieldMeta?.AllowMultipleValues;
+        <div className="mappingSection">
+          <h4 className="sectionTitle">Column Mapping</h4>
+          <div className="tableWrapper">
+            <table className="mappingTable">
+              <thead>
+                <tr>
+                  <th>File Column</th>
+                  <th>Mapped Field</th>
+                </tr>
+              </thead>
+              <tbody>
+                {columnMapping.map((map, idx) => {
+                  const fieldMeta = listFields.find(f => f.InternalName === map.listField);
+                  const isLookup = fieldMeta?.TypeAsString === "Lookup";
+                  const isMultiLookup = isLookup && fieldMeta?.AllowMultipleValues;
 
-            return (
-              <div key={idx} className="mb-4 border-b pb-2">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-40">{map.fileColumn}</span>
-                  <select
-                    value={map.listField}
-                    onChange={(e) => handleMappingChange(idx, e.target.value)}
-                    className={`border p-1 flex-1 ${!map.listField ? "border-red-500" : "border-gray-300"
-                      }`}
-                  >
-                    <option value="">-- Not Mapped --</option>
-                    {listFields.map(f => {
-                      let label = `${f.Title} (${f.TypeAsString})`;
-                      if (f.TypeAsString === "Lookup" && f.LookupList) {
-                        const lookupTitle = lookupLists[f.LookupList] || f.LookupList;
-                        label = `${f.Title} (Lookup → ${lookupTitle})`;
-                      }
-                      return (
-                        <option key={f.InternalName} value={f.InternalName}>
-                          {label}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
+                  return (
+                    <tr key={idx}>
+                      <td>{map.fileColumn}</td>
+                      <td>
+                        <select
+                          value={map.listField}
+                          onChange={(e) => handleMappingChange(idx, e.target.value)}
+                          className={!map.listField ? "selectError" : ""}
+                        >
+                          <option value="">-- Not Mapped --</option>
+                          {listFields.map(f => {
+                            let label = `${f.Title} (${f.TypeAsString})`;
+                            if (f.TypeAsString === "Lookup" && f.LookupList) {
+                              const lookupTitle = lookupLists[f.LookupList] || f.LookupList;
+                              label = `${f.Title} (Lookup → ${lookupTitle})`;
+                            }
+                            return (
+                              <option key={f.InternalName} value={f.InternalName}>
+                                {label}
+                              </option>
+                            );
+                          })}
+                        </select>
 
-                {/* Lookup Preview */}
-                {isLookup && lookupValues[map.listField] && (
-                  <div className="ml-40 text-sm text-gray-600">
-                    <div>Available values (sample):</div>
-
-                    {isMultiLookup ? (
-                      <div className="border p-2 rounded bg-white mt-1 max-h-28 overflow-y-auto">
-                        {lookupValues[map.listField].map(lv => (
-                          <label key={lv.Id} className="block">
-                            <input type="checkbox" value={lv.Id} className="mr-2" />
-                            {lv.Title}
-                          </label>
-                        ))}
-                      </div>
-                    ) : (
-                      <select className="border p-1 w-60 mt-1">
-                        {lookupValues[map.listField].map(lv => (
-                          <option key={lv.Id} value={lv.Id}>
-                            {lv.Title}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                        {/* Lookup Preview */}
+                        {isLookup && lookupValues[map.listField] && (
+                          <div className="lookupPreview">
+                            {isMultiLookup ? (
+                              lookupValues[map.listField].map(lv => (
+                                <label key={lv.Id} className="checkboxItem">
+                                  <input type="checkbox" /> {lv.Title}
+                                </label>
+                              ))
+                            ) : (
+                              <select>
+                                {lookupValues[map.listField].map(lv => (
+                                  <option key={lv.Id} value={lv.Id}>
+                                    {lv.Title}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
           {columnMapping.some(m => !m.listField) && (
-            <div className="text-red-600 mt-2">
+            <div className="warningText">
               ⚠ Some columns are not mapped. Please map them before uploading.
             </div>
           )}
         </div>
       )}
 
-      {/* Lookup mismatch summary */}
-      {/* {mismatchSummary.length > 0 && (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 p-3 rounded mb-4">
-          <h4 className="font-semibold">⚠ Lookup Validation Warnings</h4>
-          {mismatchSummary.map((ms, idx) => (
-            <div key={idx} className="mt-1">
-              <span className="font-medium">{ms.field}</span>: {ms.totalMismatches} mismatches.
-              <div className="ml-4 text-sm">Examples: {ms.values.join(", ")}{ms.values.length >= 10 && " ..."}</div>
-            </div>
-          ))}
-        </div>
-      )} */}
-
       {/* Upload Button */}
       {rows.length > 0 && (
         <button
           onClick={handleUpload}
           disabled={isUploading}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          className="uploadBtn"
         >
           {isUploading ? "Uploading..." : "Upload to SharePoint"}
         </button>
       )}
+
+      {/* Progress Bar */}
       {isUploading && (
-        <div className="w-full bg-gray-200 rounded h-4 mb-4">
-          <div
-            className="bg-blue-600 h-4 rounded text-xs text-white text-center"
-            style={{ width: `${progress}%` }}
-          >
-            {progress}%
-          </div>
+        <div className="progressBar">
+          <div style={{ width: `${progress}%` }}>{progress}%</div>
         </div>
       )}
 
       {/* Logs */}
-      <div className="mt-4 bg-white p-2 border max-h-48 overflow-y-auto">
-        {logs.map((log, idx) => (
-          <div key={idx} className={log.success ? "text-green-600" : "text-red-600"}>
-            {log.message}
-          </div>
-        ))}
+      <div className="logsSection">
+        <h4 className="sectionTitle">Upload Logs</h4>
+        <div className="logsBox">
+          {logs.length === 0 && <div className="emptyLog">No logs yet.</div>}
+          {logs.map((log, idx) => (
+            <div key={idx} className={log.success ? "logSuccess" : "logError"}>
+              {log.message}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
+
+
 };
